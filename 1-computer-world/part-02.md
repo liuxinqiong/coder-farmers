@@ -213,29 +213,29 @@ int full = 0;
 // 生产者
 while(true) {
   // 如果队列已满，则只好等待
-  wait(empty)
+  wait(empty);
   // 有空位了，也需要加锁，避免两个线程同时操作
-  wait(lock)
+  wait(lock);
   // 加入……
 
   // 释放锁
-  signal(lock)
+  signal(lock);
   // 通知消费者产生了新的文件
-  signal(full)
+  signal(full);
 }
 
 // 消费者
 while(true) {
   // 如果队列为空，则等待
-  wait(full)
+  wait(full);
   // 有数据了，加锁
-  wait(lock)
+  wait(lock);
   // 删除……
 
   // 释放锁
-  signal(lock)
+  signal(lock);
 
   // 通知生产者有空位了
-  signal(empty)
+  signal(empty);
 }
 ```
