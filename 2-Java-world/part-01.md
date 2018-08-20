@@ -135,3 +135,76 @@ AJAX技术出来后，服务端MVC中的view越来也少，很多从来浏览器
 架设一个消息队列在两个系统之间，订单系统产生订单后，只要把订单信息写到这个队列就完事了，配送系统从消息队列中读取信息即可。
 
 > 消息队列必须实现持久化，保存在硬盘上
+
+## 动态代理
+背景：Java不支持动态性，不能在运行时修改一个类，导致不能用声明的方式来编程。
+
+需求：写完代码后
+* 某些函数调用前后加上日志记录
+* 某些函数加上事务支持
+* 某些函数加上权限控制
+* ……
+
+这些需求十分通用，如果在每个函数中都实现一遍，那么重复代码就太多了。
+
+虽然Java不能修改现有的类，但是可以在运行时动态的创建新的类，让这个类作为代理，由于是面向接口编程，在调用方看来都是IHelloWorld接口，并不会意识到底层已经沧海桑田了。
+```java
+public interface IHelloWorld {
+    public void sayHello();
+}
+public class HelloWorld implements IHelloWorld {
+    public void sayHello() {
+        System.out.println('hello world')
+    }
+}
+```
+
+Java提供一个InvocationHandler接口，该接口中有一个叫做invoke的方式就是写扩展代码的地方。
+
+Proxy.newProxyInstance()，动态生成类
+
+> 动态代理：运行时动态生成类，并且作为一个真实对象的代理来做事情
+
+## 注解
+Java帝国配置文件都在使用XML。
+
+注解有点像增强版的注释，这个注释不但有一定的格式，还有特定的含义，这样别的工具就可以通过它来做事情了。
+
+允许自定义注解。
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Test {
+    boolean ignore() default false;
+}
+```
+
+@Target表示该注解的应用目标，可以是类、方法、方法参数等。@Retention表示这个注解要保留到什么时候，可以只在源码中，或者在.class文件中或者在运行中
+
+如何使自定义注解发挥作用呢。在运行时通过反射的方式取出方法的注解，如果这个直接是@Test，并且没有被忽略，就可以通过反射的方式去执行这个方法了。
+
+> 使用注解，配置靠近代码，容易阅读，容易修改
+
+使用注解多了，配置会分散在各个Java文件中，则极难查找，如果使用XML，则所有的配置集中在一处，则一目了然，通过如果你想修改配置就得修改Java源文件，就需要重新编译部署。
+
+注解发布后，并没有出现谁取代谁，而是被混合起来使用，对于一些需要集中配置的场合，如数据源的配置，自然使用XML，对于@Controller、@RequestMapping、@Transactional这样的注解更喜欢和Java方法卸载一起，显得简单直观
+
+## 泛型
+想起多年以前，没做前端时，被问到的面试题了，我想这是答案吧。
+```java
+List list = new ArrayList()
+list.add("apple")
+list.add(new Integer(10))
+```
+
+思考一下上面的代码有什么问题，如果往list中添加不同类型数据时，取出的时候还得做强制转换，不然很容易出错。这会导致一个问题，这会增加使用者的责任，编译器也无法帮忙，在运行时才会抛出Class Cast异常。
+
+通过泛型能够在编译期检查出错误，使用List的人也不用做强制转换，还是很有好处的
+```java
+public class ArrayList<T> implements List<T> {
+
+}
+public static <T extends Comparable<T>> T max(List<T> list)
+```
+
+> 泛型极大限度的减少了运行期那些转型导致的异常，简化了代码
