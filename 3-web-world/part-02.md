@@ -121,3 +121,16 @@ Redis，Nginx，Tomcat都集群化了，就剩下数据库了，比如常用的 
 * 分布式事务非常麻烦，不得不选择最终一致性妥协
 * 基于HTTP的调用远远没有在一个进程内的方式效率高
 * 监控麻烦：运行实例多，相互之间调用，出错难以追踪
+
+## HTTP Server
+* HTTP Server 1.0：阻塞等待
+* HTTP Server 2.0：多进程
+  * 为每个新的socket创建子进程来接管，主进程不会阻塞，可以继续接受新的连接
+  * 每个进程都要消耗大量资源，进程切换对于操作系统而言开销也很大
+* HTTP Server 3.0：select模型
+  * 一个socket链接就是一个文件描述符（File Descriptor），fd背后是一个简单的数据结构
+  * 操作系统保存好socket编号，如果发现socket可以读写了，就把对应socket做一个标记
+  * server遍历socket，处理数据，处理完了再把fd告诉操作系统
+* HTTP Server 4.0：epoll模型
+  * 3.0有缺陷，1.每次最多告诉1024个 socket fd，2.反复遍历socket fd，看有没有标志位需要处理，而实际情况很多socket并不活跃，在一段时间内浏览器并没有数据发过来，这1000多个socket可能只有那么几十个需要处理，却不得不查看所有的socket
+  * epoll模型就只直接把发生了变化的socket告诉HTPP Server
