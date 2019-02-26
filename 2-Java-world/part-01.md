@@ -33,7 +33,7 @@ BootStrap ClassLoader -> Extensiton ClassLoader -> App ClassLoader
 
 具体堆区有多大，是由码农决定的，在启动虚拟机的时候会指定参数。
 
-如何只得到谁有用，谁没用呢？
+如何知道谁有用，谁没用呢？
 
 可达性分析，清理者掌握着一些叫做GC Roots的对象，从这些节点出发四处搜索被GC Roots直接引用的对象，然后再找这些对象🔒引用的对象这么一层一层找下去，就形成了一条以GC Roots为起点的引用链条，如果你不在这条链条上，那就很有可能被清理掉了
 
@@ -111,9 +111,9 @@ CGI方式输出HTML：本质字符串拼接
 
 紧接着Sun公司推出JSP（Java Server Page），但是存在一个问题，程序员把绝大部分业务逻辑搞在JSP中，会导致无法编译。
 
-推出MVC，把展示和逻辑分开，用Servlet来充当控制器，用Java类来充当模型，而试图就是JSP了。
+推出MVC，把展示和逻辑分开，用Servlet来充当控制器，用Java类来充当模型，而视图就是JSP了。
 
-这样一来使JSP只关注现实，但是在界面上显示逻辑还是必不可少的，所以像分支、循环这样的控制语句不可或缺。因此JSP提供了一套标准，叫做JSP Standard Tag Library（JSTL）标签库。
+这样一来使JSP只关注显示，但是在界面上显示逻辑还是必不可少的，所以像分支、循环这样的控制语句不可或缺。因此JSP提供了一套标准，叫做JSP Standard Tag Library（JSTL）标签库。
 
 JSTL本质是Java类，能够接收到你传递的参数，然后计算，输出HTML。
 
